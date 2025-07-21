@@ -18,8 +18,8 @@ output_lines = ["MU-TH-UR 6000 READY FOR INPUT"]
 
 show_input = True
 
+
 def draw():
-    print("x")
     screen.fill(BLACK)
     y = 20
     for line in output_lines[-20:]:
@@ -30,10 +30,10 @@ def draw():
         rendered_input = font.render("> " + input_text + "_", True, GREEN)
         screen.blit(rendered_input, (20, y))
         pygame.display.flip()
-    
+
 
 def typewriter_effect(text):
-    line = "" 
+    line = ""
     for char in text:
         line += char
         output_lines.append(line + "_")
@@ -57,7 +57,7 @@ while running:
                 input_text = input_text[:-1]
             elif event.key == pygame.K_RETURN:
                 output_lines.append("> " + input_text)
-                show_input=False
+                show_input = False
                 typewriter_effect("Antwort wird erstellt.")
                 input_text = ""
                 show_input = True
