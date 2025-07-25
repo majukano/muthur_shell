@@ -19,6 +19,11 @@ output_lines = ["MU-TH-UR 6000 READY FOR INPUT"]
 show_input = True
 
 
+pygame.init()
+pygame.mixer.init()
+SM_sound = pygame.mixer.Sound("SM_sound.mp3")
+
+
 def draw():
     screen.fill(BLACK)
     y = 20
@@ -35,12 +40,13 @@ def draw():
 def typewriter_effect(text):
     line = ""
     for char in text:
+        SM_sound.play()
+        time.sleep(0.05)
         line += char
         output_lines.append(line + "_")
         draw()
         pygame.display.flip()
         output_lines.pop()
-        time.sleep(0.05)
     output_lines.append(line)
 
 
