@@ -43,7 +43,7 @@ def typewriter_effect(text):
         time.sleep(0.05)
     output_lines.append(line)
 
-
+# Main Loop
 running = True
 while running:
     draw()
