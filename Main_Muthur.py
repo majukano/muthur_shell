@@ -58,7 +58,7 @@ while running:
             elif event.key == pygame.K_RETURN:
                 output_lines.append("> " + input_text)
                 show_input = False
-                typewriter_effect("Antwort wird erstellt.")
+                typewriter_effect("Antwort wird erstellt. was passiert wenn")
                 input_text = ""
                 show_input = True
 
