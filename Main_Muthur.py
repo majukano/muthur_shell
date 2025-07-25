@@ -22,6 +22,8 @@ show_input = True
 pygame.init()
 pygame.mixer.init()
 SM_sound = pygame.mixer.Sound("SM_sound.mp3")
+conf_beep = pygame.mixer.Sound("conf_beep.ogg")
+
 courser = "\u2588"
 
 line_y = HEIGHT // 2  # y-Position (horizontal in der Mitte)
@@ -50,6 +52,8 @@ def output_line(start_x, line_y):
         )
         start_x -= speed
         pygame.display.flip()
+    conf_beep.play()
+    time.sleep(0.1)
 
 
 def typewriter_effect(text):
