@@ -2,15 +2,20 @@ import pygame
 import sys
 import time
 
+
 pygame.init()
 WIDTH, HEIGHT = 800, 600
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("MU-TH-UR Android")
+font_path = (
+    "fonts/TerminessNerdFontMono-Regular.ttf"  # relativer Pfad zur Schriftartdatei
+)
+font = pygame.font.Font(font_path, 16)
 
 # Android: Tastatur zeigen
 pygame.key.start_text_input()
 
-font = pygame.font.SysFont("couriernew", 24)
+# font = pygame.font.SysFont("couriernew", 24)
 GREEN = (0, 255, 0)
 BLACK = (0, 0, 0)
 
