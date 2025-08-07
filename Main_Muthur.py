@@ -4,6 +4,7 @@ import time
 
 
 pygame.init()
+clock = pygame.time.Clock()
 WIDTH, HEIGHT = 800, 600
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("MU-TH-UR Android")
@@ -33,8 +34,8 @@ courser = "\u2588"
 
 line_y = HEIGHT // 2  # y-Position (horizontal in der Mitte)
 start_x = WIDTH  # Start am rechten Rand
-end_x = 100  # Verschwinde bei x < 200
-speed = 10  # Geschwindigkeit der Bewegung
+end_x = 110  # Verschwinde bei x < 200
+speed = 5  # Geschwindigkeit der Bewegung
 
 
 def draw():
@@ -51,12 +52,17 @@ def draw():
 
 
 def output_line(start_x, line_y):
-    while start_x > end_x:
+    running = True
+    while running:
+        clock.tick(60) 
+        draw()
         pygame.draw.line(
             screen, (0, 255, 0), (start_x, line_y), (start_x - 100, line_y), 10
         )
         start_x -= speed
         pygame.display.flip()
+        if start_x <= end_x:
+            running = False
     conf_beep.play()
     time.sleep(0.1)
     while start_x < end_x:
@@ -83,6 +89,7 @@ def typewriter_effect(text):
 # Main Loop
 running = True
 while running:
+    clock.tick(60) 
     draw()
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
