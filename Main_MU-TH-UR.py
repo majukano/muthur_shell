@@ -6,6 +6,7 @@ import time
 class MainMuthur:
     def __init__(self):
         pygame.init()
+        pygame.display.set_caption("MU-TH-UR 6000")
         pygame.mixer.init()
         self.clock = pygame.time.Clock()
         self.SM_sound = pygame.mixer.Sound("SM_sound.mp3")
