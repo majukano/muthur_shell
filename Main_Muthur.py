@@ -59,6 +59,12 @@ def output_line(start_x, line_y):
         pygame.display.flip()
     conf_beep.play()
     time.sleep(0.1)
+    while start_x < end_x:
+        pygame.draw.line(
+            screen, (0, 255, 0), (start_x, line_y), (start_x + 100, line_y), 10
+        )
+        start_x -= speed
+        pygame.display.flip()
 
 
 def typewriter_effect(text):
