@@ -1,0 +1,14 @@
+WIDTH = 800
+HEIGHT = 600
+GREEN = (0, 255, 0)
+BLACK = (0, 0, 0)
+FONT_PATH = "fonts/TerminessNerdFontMono-Regular.ttf"
+FONT_SIZE = 16
+CURSOR_BLINK_MS = 500
+OP_INIT = "TI-KI-SA M554 READY FOR INPUT"
+CAP_TXT = "Titanium Station"  # Fenster Titel
+SM_SOU = "SM_sound.mp3"  # Schreibmachinen Sound
+CON_SOU = "conf_beep.ogg"  # Bereit für die Ausgabe Sound
+CUR_SYM = "\u2588"
+MAX_LIN = 20
+FPS = 60
