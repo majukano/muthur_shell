@@ -59,9 +59,13 @@ class MainMuthur:
         pygame.mixer.init()
         pygame.display.set_caption(config.CAP_TXT)
 
+        self.input_text = ""
+
         self.screen = pygame.display.set_mode((config.WIDTH, config.HEIGHT))
         self.clock = pygame.time.Clock()
         self.black = config.BLACK
+        self.green = config.GREEN
+        self.cur_sym = config.CUR_SYM
         # --- Assets laden ---
         self.font = pygame.font.Font(config.FONT_PATH, config.FONT_SIZE)
         self.SM_sound = pygame.mixer.Sound(config.SM_SOU)
@@ -70,7 +74,7 @@ class MainMuthur:
         # --- Module erstellen ---
         self.console = Console(self.font, config.GREEN, config.MAX_LIN)
         self.cursor = Cursor(
-            self.font, config.GREEN, config.CURSOR_BLINK_MS, config.CUR_SYM
+            self.font, self.green, config.CURSOR_BLINK_MS, self.cur_sym
         )
         self.fps = config.FPS
         # --- Erste Ausgabe ---
@@ -93,11 +97,36 @@ class MainMuthur:
     # -------------------------------
     def handle_events(self):
         for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                self.running = False
+            action = {
+                pygame.QUIT: self.quit_game,
+                pygame.TEXTINPUT: lambda e=event: self.text_input(e),
+                pygame.KEYDOWN: lambda e=event: self.key_down(e),
+            }
+            action = action.get(event.type)
+            if action:
+                action()
+            # if event.type == pygame.QUIT:
+            #     self.running = False
             # Hier später Eingabe-Handling einfügen:
             # elif event.type == pygame.KEYDOWN:
             #     ...
+
+    def quit_game(self):
+        self.running = False
+
+    def text_input(self, event):
+        self.input_text += event.text
+
+    def key_down(self, event):
+        action = {
+            pygame.K_BACKSPACE: self.delete_last_charakter,
+        }
+        action = action.get(event.key)
+        if action:
+            action()
+
+    def delete_last_charakter(self):
+        self.input_text = self.input_text[:-1]
 
     # -------------------------------
     # Update
@@ -115,7 +144,13 @@ class MainMuthur:
         # Cursor am Ende der letzten Zeile anzeigen
         cursor_x = 20
         cursor_y = 20 + len(self.console.lines) * (self.font.get_height() + 2)
-        self.cursor.draw(self.screen, cursor_x, cursor_y)
+        if self.input_text == "":
+            self.cursor.draw(self.screen, cursor_x, cursor_y)
+        else:
+            rendered_input = self.font.render(
+                self.input_text + self.cur_sym, True, self.green
+            )
+            self.screen.blit(rendered_input, (20, cursor_y))
 
         pygame.display.flip()
 
