@@ -8,22 +8,28 @@ import config
 class Console:
     """Text-Console für Ausgabe mehrerer Zeilen."""
 
-    def __init__(self, font, color, max_lines):
+    def __init__(self, font, color, max_lines, screen):
         self.lines = []
         self.font = font
         self.color = color
         self.max_lines = max_lines
+        self.screen = screen
 
     def add_line(self, text):
         self.lines.append(text)
         if len(self.lines) > self.max_lines:
             self.lines.pop(0)
 
-    def draw(self, surface, x, y):
+    def draw(self, x, y):
         for line in self.lines:
             rendered = self.font.render(line, True, self.color)
-            surface.blit(rendered, (x, y))
+            self.screen.blit(rendered, (x, y))
             y += self.font.get_height() + 2
+            
+    def KI_answer(self, text):
+        rendered = self.font.render(text, True, self.color)
+        self.screen.blit(rendered,(100,200))
+        pygame.display.flip()
 
 
 class Cursor:
@@ -49,6 +55,14 @@ class Cursor:
             surface.blit(rendered, (x, y))
 
 
+class KI():
+    def __init__(self, Console):
+        self.Console = Console
+    
+    def receive_input(self, input_text):
+        self.Console.KI_answer(input_text)
+
+
 # ============================================================
 # 3. HAUPTKLASSE
 # ============================================================
@@ -72,10 +86,12 @@ class MainMuthur:
         self.conf_beep = pygame.mixer.Sound(config.CON_SOU)
 
         # --- Module erstellen ---
-        self.console = Console(self.font, config.GREEN, config.MAX_LIN)
+        self.console = Console(self.font, config.GREEN, config.MAX_LIN, self.screen)
         self.cursor = Cursor(
             self.font, self.green, config.CURSOR_BLINK_MS, self.cur_sym
         )
+        self.KI = KI(self.console)
+
         self.fps = config.FPS
         # --- Erste Ausgabe ---
         self.console.add_line(config.OP_INIT)
@@ -120,6 +136,7 @@ class MainMuthur:
     def key_down(self, event):
         action = {
             pygame.K_BACKSPACE: self.delete_last_charakter,
+            pygame.K_RETURN: self.send_input,
         }
         action = action.get(event.key)
         if action:
@@ -128,6 +145,8 @@ class MainMuthur:
     def delete_last_charakter(self):
         self.input_text = self.input_text[:-1]
 
+    def send_input(self):
+        self.KI.receive_input(self.input_text)
     # -------------------------------
     # Update
     # -------------------------------
@@ -139,7 +158,7 @@ class MainMuthur:
     # -------------------------------
     def draw(self):
         self.screen.fill(self.black)
-        self.console.draw(self.screen, 20, 20)
+        self.console.draw(20, 20)
 
         # Cursor am Ende der letzten Zeile anzeigen
         cursor_x = 20
