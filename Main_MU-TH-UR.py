@@ -25,10 +25,10 @@ class Console:
             rendered = self.font.render(line, True, self.color)
             self.screen.blit(rendered, (x, y))
             y += self.font.get_height() + 2
-            
+
     def KI_answer(self, text):
         rendered = self.font.render(text, True, self.color)
-        self.screen.blit(rendered,(100,200))
+        self.screen.blit(rendered, (100, 200))
         pygame.display.flip()
 
 
@@ -55,10 +55,10 @@ class Cursor:
             surface.blit(rendered, (x, y))
 
 
-class KI():
+class KI:
     def __init__(self, Console):
         self.Console = Console
-    
+
     def receive_input(self, input_text):
         self.Console.KI_answer(input_text)
 
@@ -147,6 +147,7 @@ class MainMuthur:
 
     def send_input(self):
         self.KI.receive_input(self.input_text)
+
     # -------------------------------
     # Update
     # -------------------------------
