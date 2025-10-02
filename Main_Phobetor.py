@@ -60,8 +60,8 @@ class Console:
         top_text = self.TextGen.top_text(init_text)
         self.screen.blit(top_text, self.top_font_pos)
 
-    def cursor_area(self):
-        cursor_text = self.TextInput.cursor_text_input()
+    def cursor_area(self, dt):
+        cursor_text = self.TextInput.cursor_text_input(dt)
         cursor_ren_text = self.TextGen.top_text(cursor_text)
         self.screen.blit(cursor_ren_text, self.cursor_area_pos)
 
@@ -78,7 +78,7 @@ class Loop:
             dt = self.clock.tick(self.fps)
             self.handle_events()
             self.Console.top_area()
-            self.Console.cursor_area()
+            self.Console.cursor_area(dt)
             pygame.display.flip()
 
     def handle_events(self):
@@ -97,12 +97,26 @@ class TextInput:
     def __init__(self):
         self.OP_INIT = config.OP_INIT
         self.CUR_SYM = config.CUR_SYM
+        self.cursor_timer = 0
+        self.cursor_visible = False
+        self.blink_time_ms = config.CURSOR_BLINK_MS
 
     def top_text_input(self):
         return self.OP_INIT
 
-    def cursor_text_input(self):
-        return self.CUR_SYM
+    def cursor_text_input(self, dt):
+        self.cursor_blink(dt)
+        cursor_text = ""
+        print(self.cursor_visible)
+        if self.cursor_visible:
+            cursor_text = self.CUR_SYM
+        return cursor_text
+
+    def cursor_blink(self, dt):
+        self.cursor_timer += dt
+        if self.cursor_timer >= self.blink_time_ms:
+            self.cursor_visible = not self.cursor_visible
+            self.cursor_timer = 0
 
 
 class TextGen:
