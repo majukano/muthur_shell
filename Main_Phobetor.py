@@ -16,7 +16,6 @@ class Console:
         pygame.display.set_caption(self.CAP_TXT)
         self.screen.fill((self.BLACK))
         self.area_calc()
-        self.main_lines()
         self.area_prep()
 
     def area_calc(self):
@@ -64,6 +63,9 @@ class Console:
         cursor_text = self.TextInput.cursor_text_input(dt)
         cursor_ren_text = self.TextGen.top_text(cursor_text)
         self.screen.blit(cursor_ren_text, self.cursor_area_pos)
+        
+    def screen_reset(self):
+        self.screen.fill((0, 0, 0))  # Schwarz, oder jede beliebige Farbe 
 
 
 class Loop:
@@ -76,7 +78,9 @@ class Loop:
     def main_loop(self):
         while True:
             dt = self.clock.tick(self.fps)
+            self.Console.screen_reset()
             self.handle_events()
+            self.Console.main_lines()
             self.Console.top_area()
             self.Console.cursor_area(dt)
             pygame.display.flip()
@@ -107,7 +111,6 @@ class TextInput:
     def cursor_text_input(self, dt):
         self.cursor_blink(dt)
         cursor_text = ""
-        print(self.cursor_visible)
         if self.cursor_visible:
             cursor_text = self.CUR_SYM
         return cursor_text
