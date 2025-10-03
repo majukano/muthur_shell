@@ -4,8 +4,8 @@ import config
 
 
 class Console:
-    def __init__(self):
-        self.TextInput = TextInput()
+    def __init__(self, TextInput):
+        self.TextInput = TextInput
         self.TextGen = TextGen()
         self.WIDTH = config.WIDTH
         self.HEIGHT = config.HEIGHT
@@ -69,25 +69,29 @@ class Console:
 
 
 class Loop:
-    def __init__(self, Console, clock, fps):
+    def __init__(self, Console, TextInput, clock, fps):
+        self.TextInput = TextInput
         self.clock = clock
         self.fps = fps
         self.Console = Console
+        self.dt = 0
         self.main_loop()
 
     def main_loop(self):
         while True:
-            dt = self.clock.tick(self.fps)
+            self.dt = self.clock.tick(self.fps)
             self.Console.screen_reset()
             self.handle_events()
             self.Console.main_lines()
             self.Console.top_area()
-            self.Console.cursor_area(dt)
+            self.Console.cursor_area(self.dt)
             pygame.display.flip()
 
     def handle_events(self):
         for event in pygame.event.get():
-            action = {pygame.QUIT: self.quit_game}
+            action = {
+                pygame.QUIT: self.quit_game,
+                pygame.TEXTINPUT: lambda e=event: self.TextInput.new_txt(e)}
             action = action.get(event.type)
             if action:
                 action()
@@ -104,15 +108,19 @@ class TextInput:
         self.cursor_timer = 0
         self.cursor_visible = False
         self.blink_time_ms = config.CURSOR_BLINK_MS
+        self.input_text = ""
 
     def top_text_input(self):
         return self.OP_INIT
 
     def cursor_text_input(self, dt):
-        self.cursor_blink(dt)
-        cursor_text = ""
-        if self.cursor_visible:
-            cursor_text = self.CUR_SYM
+        if self.input_text == "":
+            self.cursor_blink(dt)
+            cursor_text = ""
+            if self.cursor_visible:
+                cursor_text = self.CUR_SYM
+        else:
+            cursor_text = self.input_text + self.CUR_SYM
         return cursor_text
 
     def cursor_blink(self, dt):
@@ -120,6 +128,10 @@ class TextInput:
         if self.cursor_timer >= self.blink_time_ms:
             self.cursor_visible = not self.cursor_visible
             self.cursor_timer = 0
+    
+    def new_txt(self, textinput_event):
+        self.input_text += textinput_event.text
+        
 
 
 class TextGen:
@@ -139,8 +151,9 @@ class MainPhobetor:
         pygame.init()
         self.clock = pygame.time.Clock()
         self.fps = config.FPS
-        self.Console = Console()
-        Loop(self.Console, self.clock, self.fps)
+        self.TextInput = TextInput() 
+        self.Console = Console(self.TextInput)
+        Loop(self.Console, self.TextInput, self.clock, self.fps)
 
 
 if __name__ == "__main__":
