@@ -91,10 +91,21 @@ class Loop:
         for event in pygame.event.get():
             action = {
                 pygame.QUIT: self.quit_game,
-                pygame.TEXTINPUT: lambda e=event: self.TextInput.new_txt(e)}
+                pygame.TEXTINPUT: lambda e=event: self.TextInput.new_txt(e),
+                pygame.KEYDOWN: lambda e=event: self.key_down(e)}
             action = action.get(event.type)
             if action:
                 action()
+
+    def key_down(self, event):
+        action = {
+            pygame.K_BACKSPACE: self.TextInput.delete_last_charakter,
+            #pygame.K_RETURN: self.send_input,
+        }
+        action = action.get(event.key)
+        if action:
+            action()
+        
 
     def quit_game(self):
         pygame.quit()
@@ -131,6 +142,9 @@ class TextInput:
     
     def new_txt(self, textinput_event):
         self.input_text += textinput_event.text
+
+    def delete_last_charakter(self):
+        self.input_text = self.input_text[:-1]
         
 
 
