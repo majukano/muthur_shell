@@ -4,9 +4,10 @@ import config
 
 
 class Console:
-    def __init__(self, TextInput):
+    def __init__(self, TextInput, TextGen, KIOutput):
+        self.KIOutput = KIOutput
         self.TextInput = TextInput
-        self.TextGen = TextGen()
+        self.TextGen = TextGen
         self.WIDTH = config.WIDTH
         self.HEIGHT = config.HEIGHT
         self.BLACK = config.BLACK
@@ -53,6 +54,7 @@ class Console:
     def area_prep(self):
         self.top_font_pos = (50, 50)
         self.cursor_area_pos = (50, 125)
+        self.kioutput_area_pos = (50, 250)
 
     def top_area(self):
         init_text = self.TextInput.top_text_input()
@@ -63,14 +65,19 @@ class Console:
         cursor_text = self.TextInput.cursor_text_input(dt)
         cursor_ren_text = self.TextGen.top_text(cursor_text)
         self.screen.blit(cursor_ren_text, self.cursor_area_pos)
+
+    def output_area(self):
+        output_data = self.KIOutput.rendert_output()
+        self.screen.blit(output_data, self.kioutput_area_pos)
         
     def screen_reset(self):
         self.screen.fill((0, 0, 0))  # Schwarz, oder jede beliebige Farbe 
 
 
 class Loop:
-    def __init__(self, Console, TextInput, clock, fps):
+    def __init__(self, Console, TextInput, KIOutput, clock, fps):
         self.TextInput = TextInput
+        self.KIOutput = KIOutput
         self.clock = clock
         self.fps = fps
         self.Console = Console
@@ -85,6 +92,7 @@ class Loop:
             self.Console.main_lines()
             self.Console.top_area()
             self.Console.cursor_area(self.dt)
+            self.Console.output_area()
             pygame.display.flip()
 
     def handle_events(self):
@@ -100,13 +108,12 @@ class Loop:
     def key_down(self, event):
         action = {
             pygame.K_BACKSPACE: self.TextInput.delete_last_charakter,
-            #pygame.K_RETURN: self.send_input,
+            pygame.K_RETURN: self.KIOutput.get_input,
         }
         action = action.get(event.key)
         if action:
             action()
         
-
     def quit_game(self):
         pygame.quit()
         sys.exit()
@@ -145,7 +152,25 @@ class TextInput:
 
     def delete_last_charakter(self):
         self.input_text = self.input_text[:-1]
+    
+    def send_input_txt(self):
+        return self.input_text
         
+        
+class KIOutput:
+    def __init__(self, TextInput, TextGen):
+        self.TextInput = TextInput
+        self.TextGen = TextGen
+        self.input_txt = ""
+        self.output = ""
+    
+    def get_input(self):
+        self.input_txt = self.TextInput.send_input_txt()
+        self.output = self.input_txt
+    
+    def rendert_output(self):
+        self.ren_output = self.TextGen.top_text(self.output)
+        return self.ren_output
 
 
 class TextGen:
@@ -165,9 +190,11 @@ class MainPhobetor:
         pygame.init()
         self.clock = pygame.time.Clock()
         self.fps = config.FPS
+        self.TextGen = TextGen()
         self.TextInput = TextInput() 
-        self.Console = Console(self.TextInput)
-        Loop(self.Console, self.TextInput, self.clock, self.fps)
+        self.KIOutput = KIOutput(self.TextInput, self.TextGen)
+        self.Console = Console(self.TextInput, self.TextGen, self.KIOutput)
+        Loop(self.Console, self.TextInput, self.KIOutput, self.clock, self.fps)
 
 
 if __name__ == "__main__":
