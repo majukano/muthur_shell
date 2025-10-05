@@ -1,6 +1,7 @@
 import pygame
 import sys
 import config
+import time
 
 
 class Console:
@@ -163,15 +164,24 @@ class KIOutput:
         self.TextGen = TextGen
         self.input_txt = ""
         self.output = ""
+        self.typrewriter_num = 0
     
     def get_input(self):
         self.input_txt = self.TextInput.send_input_txt()
-        self.output = self.input_txt
+        self.output = ""
+        self.typewriter_effekt(self.input_txt)
     
     def rendert_output(self):
         self.ren_output = self.TextGen.top_text(self.output)
         return self.ren_output
 
+    def typewriter_effekt(self, text):
+        text_len = len(text) 
+        time.sleep(0.05)
+        if self.typrewriter_num < text_len:
+            self.output += text[self.typrewriter_num]
+            self.typrewriter_num += 1
+        
 
 class TextGen:
     def __init__(self):
