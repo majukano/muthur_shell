@@ -169,6 +169,7 @@ class KIOutput:
         self.typrewriter_slow_fact = config.TW_SL
         self.typrewriter_slower = 0
         self.new_request = False
+        self.KI_sym = config.KI_SYM
 
     def get_input(self):
         self.input_txt = self.TextInput.send_input_txt()
@@ -188,6 +189,7 @@ class KIOutput:
         if self.typrewriter_num < text_len:
             if self.typrewriter_slower % self.typrewriter_slow_fact == 0:
                 self.output += text[self.typrewriter_num]
+                self.output += self.KI_sym
                 self.typrewriter_num += 1
         else:
             self.new_request = False

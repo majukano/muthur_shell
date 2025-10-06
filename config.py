@@ -13,3 +13,4 @@ CUR_SYM = "\u2588"
 MAX_LIN = 20
 FPS = 60
 TW_SL = 3
+KI_SYM = "|"
