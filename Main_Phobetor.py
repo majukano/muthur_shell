@@ -166,6 +166,8 @@ class KIOutput:
         self.input_txt = ""
         self.output = ""
         self.typrewriter_num = 0
+        self.typrewriter_slow_fact = config.TW_SL
+        self.typrewriter_slower = 0
         self.new_request = False
 
     def get_input(self):
@@ -173,20 +175,23 @@ class KIOutput:
         self.output = ""
         self.new_request = True
         self.typrewriter_num = 0
+        self.typrewriter_slower = 0
 
     def rendert_output(self, dt):
         if self.new_request:
-            self.typewriter_effekt(self.input_txt)
+            self.typewriter_effekt(self.input_txt, dt)
         self.ren_output = self.TextGen.top_text(self.output)
         return self.ren_output
 
-    def typewriter_effekt(self, text):
+    def typewriter_effekt(self, text, dt):
         text_len = len(text)
         if self.typrewriter_num < text_len:
-            self.output += text[self.typrewriter_num]
-            self.typrewriter_num += 1
+            if self.typrewriter_slower % self.typrewriter_slow_fact == 0:
+                self.output += text[self.typrewriter_num]
+                self.typrewriter_num += 1
         else:
             self.new_request = False
+        self.typrewriter_slower += 1
 
 
 class TextGen:

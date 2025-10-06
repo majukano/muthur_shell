@@ -12,3 +12,4 @@ CON_SOU = "conf_beep.ogg"  # Bereit für die Ausgabe Sound
 CUR_SYM = "\u2588"
 MAX_LIN = 20
 FPS = 60
+TW_SL = 3
