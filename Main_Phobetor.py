@@ -67,12 +67,12 @@ class Console:
         cursor_ren_text = self.TextGen.top_text(cursor_text)
         self.screen.blit(cursor_ren_text, self.cursor_area_pos)
 
-    def output_area(self):
-        output_data = self.KIOutput.rendert_output()
+    def output_area(self, dt):
+        output_data = self.KIOutput.rendert_output(dt)
         self.screen.blit(output_data, self.kioutput_area_pos)
-        
+
     def screen_reset(self):
-        self.screen.fill((0, 0, 0))  # Schwarz, oder jede beliebige Farbe 
+        self.screen.fill((0, 0, 0))  # Schwarz, oder jede beliebige Farbe
 
 
 class Loop:
@@ -93,7 +93,7 @@ class Loop:
             self.Console.main_lines()
             self.Console.top_area()
             self.Console.cursor_area(self.dt)
-            self.Console.output_area()
+            self.Console.output_area(self.dt)
             pygame.display.flip()
 
     def handle_events(self):
@@ -101,7 +101,8 @@ class Loop:
             action = {
                 pygame.QUIT: self.quit_game,
                 pygame.TEXTINPUT: lambda e=event: self.TextInput.new_txt(e),
-                pygame.KEYDOWN: lambda e=event: self.key_down(e)}
+                pygame.KEYDOWN: lambda e=event: self.key_down(e),
+            }
             action = action.get(event.type)
             if action:
                 action()
@@ -114,7 +115,7 @@ class Loop:
         action = action.get(event.key)
         if action:
             action()
-        
+
     def quit_game(self):
         pygame.quit()
         sys.exit()
@@ -147,17 +148,17 @@ class TextInput:
         if self.cursor_timer >= self.blink_time_ms:
             self.cursor_visible = not self.cursor_visible
             self.cursor_timer = 0
-    
+
     def new_txt(self, textinput_event):
         self.input_text += textinput_event.text
 
     def delete_last_charakter(self):
         self.input_text = self.input_text[:-1]
-    
+
     def send_input_txt(self):
         return self.input_text
-        
-        
+
+
 class KIOutput:
     def __init__(self, TextInput, TextGen):
         self.TextInput = TextInput
@@ -165,23 +166,28 @@ class KIOutput:
         self.input_txt = ""
         self.output = ""
         self.typrewriter_num = 0
-    
+        self.new_request = False
+
     def get_input(self):
         self.input_txt = self.TextInput.send_input_txt()
         self.output = ""
-        self.typewriter_effekt(self.input_txt)
-    
-    def rendert_output(self):
+        self.new_request = True
+        self.typrewriter_num = 0
+
+    def rendert_output(self, dt):
+        if self.new_request:
+            self.typewriter_effekt(self.input_txt)
         self.ren_output = self.TextGen.top_text(self.output)
         return self.ren_output
 
     def typewriter_effekt(self, text):
-        text_len = len(text) 
-        time.sleep(0.05)
+        text_len = len(text)
         if self.typrewriter_num < text_len:
             self.output += text[self.typrewriter_num]
             self.typrewriter_num += 1
-        
+        else:
+            self.new_request = False
+
 
 class TextGen:
     def __init__(self):
@@ -201,7 +207,7 @@ class MainPhobetor:
         self.clock = pygame.time.Clock()
         self.fps = config.FPS
         self.TextGen = TextGen()
-        self.TextInput = TextInput() 
+        self.TextInput = TextInput()
         self.KIOutput = KIOutput(self.TextInput, self.TextGen)
         self.Console = Console(self.TextInput, self.TextGen, self.KIOutput)
         Loop(self.Console, self.TextInput, self.KIOutput, self.clock, self.fps)
