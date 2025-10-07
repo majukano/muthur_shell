@@ -188,7 +188,9 @@ class KIOutput:
         text_len = len(text)
         if self.typrewriter_num < text_len:
             if self.typrewriter_slower % self.typrewriter_slow_fact == 0:
+                self.output = self.output[:-2]
                 self.output += text[self.typrewriter_num]
+                self.output += " "
                 self.output += self.KI_sym
                 self.typrewriter_num += 1
         else:
