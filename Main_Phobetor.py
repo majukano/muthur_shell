@@ -194,6 +194,7 @@ class KIOutput:
                 self.output += self.KI_sym
                 self.typrewriter_num += 1
         else:
+            self.output = self.output[:-2]
             self.new_request = False
         self.typrewriter_slower += 1
 
