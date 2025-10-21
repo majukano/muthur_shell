@@ -3,54 +3,8 @@ import sys
 import config
 import time
 import datetime
-
-
-class KeyWordTree:
-    def __init__(self):
-        self.data = {}
-
-    def add(self, *path):
-        """Flexibles Hinzufügen: add('a', 'ab', 'aba') oder add(['a', 'ab', 'aba'])"""
-        if len(path) == 1 and isinstance(path[0], (list, tuple)):
-            path = path[0]
-
-        current = self.data
-        for key in path:
-            if key not in current:
-                current[key] = {}
-            current = current[key]
-
-    def search(self, *path):
-        """Flexibles Suchen"""
-        if len(path) == 1 and isinstance(path[0], (list, tuple)):
-            path = path[0]
-
-        current = self.data
-        for key in path:
-            if key not in current:
-                return False, []
-            current = current[key]
-
-        return True, sorted(current.keys())
-
-    def exists(self, *path):
-        """Prüft nur Existenz"""
-        exists, _ = self.search(*path)
-        return exists
-
-
-# # Sehr einfache Verwendung:
-# store = FlexibleKeywordStore()
-
-# # Verschiedene Wege zum Hinzufügen
-# store.add('a', 'aa', 'aaa')
-# store.add(['a', 'ab', 'aba'])
-# store.add(['a', 'ab', 'abb'])
-
-# # Verschiedene Wege zum Suchen
-# print(store.search('a'))           # (True, ['aa', 'ab'])
-# print(store.search(['a', 'ab']))   # (True, ['aba', 'abb'])
-# print(store.exists('a', 'ab'))     # True
+from class_KeyWordTree import KeyWordTree
+from kasette_phobetor import KassettePhobetor
 
 
 class Console:
@@ -209,7 +163,9 @@ class TextInput:
 
 
 class KIOutput:
-    def __init__(self, TextInput, TextGen):
+    def __init__(self, TextInput, TextGen, KWT, kassette):
+        self.KWT = KWT
+        self.kassette = kassette
         self.TextInput = TextInput
         self.TextGen = TextGen
         self.input_txt = ""
@@ -219,9 +175,21 @@ class KIOutput:
         self.typrewriter_slower = 0
         self.new_request = False
         self.KI_sym = config.KI_SYM
+        self.send_txt = ""
+
+    def check_enter(self):
+        return self.KWT.exists(self.input_txt)
 
     def get_input(self):
         self.input_txt = self.TextInput.send_input_txt()
+        exist = self.check_enter()
+        if exist:
+            self.send_txt = kassette.get_answer(self.input_txt)
+        else:
+            self.send_txt = self.input_txt
+        self.prep_typwriter() 
+
+    def prep_typwriter(self):
         self.output = ""
         self.new_request = True
         self.typrewriter_num = 0
@@ -229,7 +197,7 @@ class KIOutput:
 
     def rendert_output(self, dt):
         if self.new_request:
-            self.typewriter_effekt(self.input_txt, dt)
+            self.typewriter_effekt(self.send_txt, dt)
         self.ren_output = self.TextGen.top_text(self.output)
         return self.ren_output
 
@@ -261,16 +229,24 @@ class TextGen:
 
 
 class MainPhobetor:
-    def __init__(self):
+    def __init__(self, kassette):
         pygame.init()
         self.clock = pygame.time.Clock()
         self.fps = config.FPS
+        self.kassette = kassette
+        self.KWT = KeyWordTree()
+        self.load_keywords()
         self.TextGen = TextGen()
         self.TextInput = TextInput()
-        self.KIOutput = KIOutput(self.TextInput, self.TextGen)
+        self.KIOutput = KIOutput(self.TextInput, self.TextGen, self.KWT, self.kassette)
         self.Console = Console(self.TextInput, self.TextGen, self.KIOutput)
         Loop(self.Console, self.TextInput, self.KIOutput, self.clock, self.fps)
+    
+    def load_keywords(self):
+        for keyword in self.kassette.get_keywords():
+            self.KWT.add(keyword)
 
 
 if __name__ == "__main__":
-    MainPhobetor()
+    kassette = KassettePhobetor()
+    MainPhobetor(kassette)
