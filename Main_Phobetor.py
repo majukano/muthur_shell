@@ -59,6 +59,7 @@ class Console:
         self.top_font_pos = (50, 50)
         self.cursor_area_pos = (50, 125)
         self.kioutput_area_pos = (50, 250)
+        self.buttom_area_pos = (50, 525)
 
     def top_area(self):
         init_text = self.TextInput.top_text_input()
@@ -73,6 +74,11 @@ class Console:
     def output_area(self, dt):
         output_data = self.KIOutput.rendert_output(dt)
         self.screen.blit(output_data, self.kioutput_area_pos)
+    
+    def buttom_area(self, dt):
+        buttom_data = self.KIOutput.selection_txt(dt)
+        buttom_txt = self.TextGen.top_text(buttom_data)
+        self.screen.blit(buttom_txt, self.buttom_area_pos)
 
     def screen_reset(self):
         self.screen.fill((0, 0, 0))  # Schwarz, oder jede beliebige Farbe
@@ -97,6 +103,7 @@ class Loop:
             self.Console.top_area()
             self.Console.cursor_area(self.dt)
             self.Console.output_area(self.dt)
+            self.Console.buttom_area(self.dt)
             pygame.display.flip()
 
     def handle_events(self):
@@ -214,6 +221,9 @@ class KIOutput:
             self.output = self.output[:-2]
             self.new_request = False
         self.typrewriter_slower += 1
+    
+    def selection_txt(self, dt):
+        return str(self.kassette.get_keywords())
 
 
 class TextGen:
@@ -244,7 +254,7 @@ class MainPhobetor:
     
     def load_keywords(self):
         for keyword in self.kassette.get_keywords():
-            self.KWT.add(keyword)
+            self.KWT.add(keyword) # TODO
 
 
 if __name__ == "__main__":
