@@ -74,7 +74,7 @@ class Console:
     def output_area(self, dt):
         output_data = self.KIOutput.rendert_output(dt)
         self.screen.blit(output_data, self.kioutput_area_pos)
-    
+
     def buttom_area(self, dt):
         buttom_data = self.KIOutput.selection_txt(dt)
         buttom_txt = self.TextGen.top_text(buttom_data)
@@ -194,7 +194,7 @@ class KIOutput:
             self.send_txt = kassette.get_answer(self.input_txt)
         else:
             self.send_txt = self.input_txt
-        self.prep_typwriter() 
+        self.prep_typwriter()
 
     def prep_typwriter(self):
         self.output = ""
@@ -221,9 +221,13 @@ class KIOutput:
             self.output = self.output[:-2]
             self.new_request = False
         self.typrewriter_slower += 1
-    
+
     def selection_txt(self, dt):
-        return str(self.kassette.get_keywords())
+        keyword_txt = self.KWT.search([])
+        keyword_str = ""
+        for str in keyword_txt:
+            keyword_str = keyword_str + str + "   "
+        return keyword_str
 
 
 class TextGen:
@@ -251,10 +255,10 @@ class MainPhobetor:
         self.KIOutput = KIOutput(self.TextInput, self.TextGen, self.KWT, self.kassette)
         self.Console = Console(self.TextInput, self.TextGen, self.KIOutput)
         Loop(self.Console, self.TextInput, self.KIOutput, self.clock, self.fps)
-    
+
     def load_keywords(self):
         for keyword in self.kassette.get_keywords():
-            self.KWT.add(keyword) # TODO
+            self.KWT.add(keyword)  # TODO
 
 
 if __name__ == "__main__":
