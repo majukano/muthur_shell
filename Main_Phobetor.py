@@ -76,7 +76,7 @@ class Console:
         self.screen.blit(output_data, self.kioutput_area_pos)
 
     def buttom_area(self, dt):
-        buttom_data = self.KIOutput.get_buttom_txt(dt)
+        buttom_data = self.KIOutput.get_buttom_txt()
         buttom_txt = self.TextGen.top_text(buttom_data)
         self.screen.blit(buttom_txt, self.buttom_area_pos)
 
@@ -121,6 +121,7 @@ class Loop:
         action = {
             pygame.K_BACKSPACE: self.TextInput.delete_last_charakter,
             pygame.K_RETURN: self.KIOutput.get_input,
+            pygame.K_SPACE: self.KIOutput.next_command,
         }
         action = action.get(event.key)
         if action:
@@ -176,6 +177,7 @@ class KIOutput:
         self.TextInput = TextInput
         self.TextGen = TextGen
         self.input_txt = ""
+        self.input_list = []
         self.output = ""
         self.typrewriter_num = 0
         self.typrewriter_slow_fact = config.TW_SL
@@ -185,17 +187,22 @@ class KIOutput:
         self.send_txt = ""
         self.buttom_data = None
 
-    def check_enter(self):
-        return self.KWT.search(self.input_txt)[0]
+    def check_enter(self, input_txt):
+        self.input_list = input_txt.split(" ")
+        return self.KWT.search(self.input_list)
 
     def get_input(self):
-        self.input_txt = self.TextInput.send_input_txt()
-        exist = self.check_enter()
+        input_txt = self.TextInput.send_input_txt()
+        exist = self.check_enter(input_txt)[0]
         if exist:
-            self.send_txt = kassette.get_answer(tuple([self.input_txt]))
+            self.send_txt = kassette.get_answer(tuple(self.input_list))
         else:
             self.send_txt = self.input_txt
         self.prep_typwriter()
+
+    def next_command(self):
+        self.new_buttom_txt()
+        self.get_buttom_txt()
 
     def prep_typwriter(self):
         self.output = ""
@@ -223,9 +230,12 @@ class KIOutput:
             self.new_request = False
         self.typrewriter_slower += 1
 
-    def get_buttom_txt(self, dt):
+    def get_buttom_txt(self):
         if self.buttom_data is None:
-            keyword_txt = self.KWT.search([])[1]
+            input_txt = self.TextInput.send_input_txt()
+            print(input_txt)  # TODO
+            keyword_txt = self.check_enter(input_txt)[1]
+            # keyword_txt = self.KWT.search([])[1]
             self.buttom_data = ""
             for str in keyword_txt:
                 self.buttom_data = self.buttom_data + str + "   "
