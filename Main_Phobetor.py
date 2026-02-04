@@ -76,7 +76,7 @@ class Console:
         self.screen.blit(output_data, self.kioutput_area_pos)
 
     def buttom_area(self, dt):
-        buttom_data = self.KIOutput.selection_txt(dt)
+        buttom_data = self.KIOutput.get_buttom_txt(dt)
         buttom_txt = self.TextGen.top_text(buttom_data)
         self.screen.blit(buttom_txt, self.buttom_area_pos)
 
@@ -183,15 +183,16 @@ class KIOutput:
         self.new_request = False
         self.KI_sym = config.KI_SYM
         self.send_txt = ""
+        self.buttom_data = None
 
     def check_enter(self):
-        return self.KWT.exists(self.input_txt)
+        return self.KWT.search(self.input_txt)[0]
 
     def get_input(self):
         self.input_txt = self.TextInput.send_input_txt()
         exist = self.check_enter()
         if exist:
-            self.send_txt = kassette.get_answer(self.input_txt)
+            self.send_txt = kassette.get_answer(tuple([self.input_txt]))
         else:
             self.send_txt = self.input_txt
         self.prep_typwriter()
@@ -222,12 +223,16 @@ class KIOutput:
             self.new_request = False
         self.typrewriter_slower += 1
 
-    def selection_txt(self, dt):
-        keyword_txt = self.KWT.search([])
-        keyword_str = ""
-        for str in keyword_txt:
-            keyword_str = keyword_str + str + "   "
-        return keyword_str
+    def get_buttom_txt(self, dt):
+        if self.buttom_data is None:
+            keyword_txt = self.KWT.search([])[1]
+            self.buttom_data = ""
+            for str in keyword_txt:
+                self.buttom_data = self.buttom_data + str + "   "
+        return self.buttom_data
+
+    def new_buttom_txt(self):
+        self.buttom_data = None
 
 
 class TextGen:

@@ -18,21 +18,15 @@ class KeyWordTree:
         if len(path) == 1 and isinstance(path[0], (list, tuple)):
             path = path[0]
 
+        exist = True
         current = self.data
         for key in path:
             if key not in current:
-                return []
+                exist = False
+                return [[], []]
             current = current[key]
         # return True, sorted(current.keys())
-        return sorted(current.keys())
-
-    def exists(self, *path):
-        """Prüft nur Existenz"""
-        keywords = self.search(*path)
-        exist = True
-        if not keywords:
-            exist = False
-        return exist
+        return [exist, sorted(current.keys())]
 
 
 # # Sehr einfache Verwendung:
@@ -52,14 +46,13 @@ if __name__ == "__main__":
 
     a = KeyWordTree()
     a.add("a", "aa", "aaa", "aaaa")
+    a.add("b")
     print("--- start ---")
-    print("exists: a, aa ---")
-    print(a.exists(["a", "aa"]))
     print("search: a, aa ---")
     print(a.search(["a", "aa"]))
     print("search: -------")
     print(a.search([]))
     print("--- other ---")
     #    a.add('a', 'aa', 'aab')
-    print(a.exists(["b", "bb"]))
-    print(a.search(["b", "bb"]))
+    print(a.search(["b"]))
+    print(a.search(["c"]))

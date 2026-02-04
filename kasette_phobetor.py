@@ -8,7 +8,7 @@ class KassettePhobetor:
 
     def ph_time(self):
         now = datetime.now()
-        time = now.strftime("%m/%d/%Y, %H:%M:%S")
+        time = now.strftime("%d/%m/%Y, %H:%M:%S")
         return time
 
     def ph_time_clock(self):
@@ -26,7 +26,7 @@ class KassettePhobetor:
         return keywords
 
     def get_answer(self, input_txt):
-        answer = []
+        answer = ""
         action = self.action_keys.get(input_txt)
         if action:
             answer = action()
